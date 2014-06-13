@@ -24,14 +24,11 @@ $(document).ready(function(){
 		if(createRoomVal.val() == ""){
 			alert("This cannot be left blank");
 		}else{
-			socket.emit("createdRoom", createRoomVal.val());
+			socket.emit("createARoom", createRoomVal.val());
 		}
 		
 	});
-	socket.on('joinedRoom', function(roomData){
-		$("body").append("You have created room:", roomData);
-		joinedRoomName = roomData;
-	});
+	
 
 	//When a user clicks join a room, take the value and search for it in the array
 	$("#joinRoomBtn").click(function(){
@@ -41,6 +38,45 @@ $(document).ready(function(){
 			socket.emit("joinRoom", joinRoomVal.val());
 		}
 	});
+
+	//User has joined a room
+	socket.on('joinedRoom', function(nameOfRoom){
+		if(!started){
+
+			started = true;
+
+			$("#createJoinRoom").hide();
+			$("#mainContent").show();
+
+			//name the room
+			joinedRoomName = nameOfRoom;
+			$("#roomNameID").text(nameOfRoom);
+			//show the usercount
+			socket.emit('addUserCount', nameOfRoom);
+		}
+
+	});
+
+	//Get the amount of users that are in the game
+	socket.on('get user count', function(usrCnt){
+		//Show how many users are in the room
+		$("#numUsers").text(usrCnt);
+		//reset the dots to nothing
+		$("#userDots").text("");
+		//for each amount of users, add them to the list
+		for(i=1; i<= usrCnt; i++){
+			$("#userDots").append("<li></li>");
+		}
+
+	});
+
+	//When the user chooses to leave of closes out the window
+	window.onbeforeunload = function(e) {
+		return 'Are you sure you wish to leave the game?';
+		//user has clicked the close button, remove them from the room
+		socket.emit('leaveRoom', joinedRoomName);
+	};
+
 
 
 
@@ -157,3 +193,5 @@ $(document).ready(function(){
 
 	
 
+
+	
