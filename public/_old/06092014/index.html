@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+			<title>Who's Paying</title>
+			<link rel="stylesheet" type="text/css" href="css/stylesheet.css">
+			<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+			<script type="text/javascript" src="/socket.io/socket.io.js"></script>
+			<script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+			<script type="text/javascript" src="scripts/bootstrap.min.js"></script>
+			<script type="text/javascript" src="scripts/whosPaying.js"></script>
+	</head>
+	<body>
+		<div id="mainContent">
+
+			<h4>Connected Users: <span id="numUsers"></span></h4>
+
+			<ul id="userDots">
+			</ul>
+
+			<h1>You are user: <span id="userIdentity"></span></h1>
+
+			<!-- input areas display first Directive?-->
+			<!--<div id="inputAreas">
+				<h1>Who's paying!?</h1>
+
+				<div id="createGameWrapper">
+					<br>
+					<label class="control-label" for="gameCreate">Create A Game</label><input type="text" class="form-control" id="gameCreate">
+					<br>
+					<button class="btn btn-warning btn-lg" id="createGame">Create!</button>
+				</div>
+				<div id="joinGameWrapper">
+					<br>
+					<label class="control-label" for="gameJoin">Join A Game</label><input type="text" class="form-control" id="gameJoin">
+					<br>
+					<button class="btn btn-warning btn-lg" id="joinGame">Join Game!</button>
+				</div>
+			</div> -->
+			<!-- end input areas -->
+
+
+
+			<!-- nameEntry for both join and creation of game Directive? -->
+			<!--<div id="nameEntry" class="lemon">
+				<label class="control-label" for="nameInput" id="nameLabel1">Enter Your Name</label><input type="text" class="form-control" id="nameInput">
+				<br>
+				<button class="btn btn-warning btn-lg" id="nameInputBtn">Done!</button>
+			</div>-->
+			<!-- end nameEntry -->
+
+
+
+			<!-- please wait dialog for other players to join the room-->
+			<!--<div id="pleaseWait" class="lemon">
+				<h3>Please wait for others to join</h3>
+			</div>-->
+			<!-- end please wait dialog -->
+
+
+			<!-- main game panel -->
+			<!--<div id="gamePanel">
+				<ul id="users"></ul>
+				<div>Start</div>
+			</div>-->
+			<!-- end game panel -->
+
+
+		</div>
+	</body>
+</html>

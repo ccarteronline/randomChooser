@@ -1,0 +1,35 @@
+#mainContent{
+	margin: 0 auto;
+	display: block;
+}
+
+#admin{
+	display: none;
+}
+
+#userDots{
+	list-style: none;
+	margin-left: -45px;
+}
+#userDots li{
+	width: 50px;
+	height: 45px;
+	background: url('../img/lemonFace.png');
+	background-size: 100%;
+	float: left;
+	margin-left:10px;
+}
+#message{
+	position: absolute;
+	width:454px;
+	height:406px;
+	background: url('../img/lemon.png');
+	display: none;
+}
+#numUsers, #userIdentity{
+	color: orange;
+}
+
+#createJoinRoom{
+	display: none;
+}

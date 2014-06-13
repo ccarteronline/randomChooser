@@ -1,0 +1,9 @@
+{
+  "name": "whos-paying",
+  "version": "0.0.1",
+  "description": "A fun way to decide who is paying the bill!",
+  "dependencies": {
+    "express": "^4.4.1",
+    "socket.io": "^1.0.4"
+  }
+}
