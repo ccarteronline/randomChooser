@@ -72,7 +72,6 @@ $(document).ready(function(){
 
 	//When the user chooses to leave of closes out the window
 	window.onbeforeunload = function(e) {
-		return 'Are you sure you wish to leave the game?';
 		//user has clicked the close button, remove them from the room
 		socket.emit('leaveRoom', joinedRoomName);
 	};
