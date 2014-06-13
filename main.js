@@ -43,6 +43,8 @@ io.on('connection', function(socket){
 		io.emit('joinedUsers', userCount);
 		randomPickedForBeeps.pop();
 		console.log(randomPickedForBeeps);
+
+
 	});
 
 	//When an admin starts the game
@@ -53,7 +55,7 @@ io.on('connection', function(socket){
 
 
 	//Create a room
-	socket.on("createdRoom", function(roomName){
+	socket.on("createARoom", function(roomName){
 		//If the room exists, emit an error otherwise, join it	
 		if(searchTheRoom(createdRooms, roomName)){
 
@@ -70,8 +72,7 @@ io.on('connection', function(socket){
 
 			});
 
-			io.sockets.in(roomName).emit('joinedRoom', "Successfully joined:"+roomName);
-			console.log(createdRooms);
+			io.sockets.in(roomName).emit('joinedRoom', roomName);
 		}
 		
 	});
@@ -81,14 +82,57 @@ io.on('connection', function(socket){
 
 		if(searchTheRoom(createdRooms, roomToJoin)){
 			socket.join(roomToJoin);
-			console.log("joined room:"+ roomToJoin);
+			io.sockets.in(roomToJoin).emit('joinedRoom', roomToJoin);
 		}else{
 			console.log("room doesnt exist, create");
 		}
+
+	});
+
+	//When a user leaves a room or closes out their browser
+	socket.on("leaveRoom", function(roomToLeave){
+		socket.leave(roomToLeave);
+		io.sockets.in(roomToLeave).emit('get user count', changeUserCount(createdRooms, roomToLeave, "subtract"));
+	});
+
+
+	//increment the usercount
+	socket.on("addUserCount", function(rmRoom){
+		io.sockets.in(rmRoom).emit('get user count', changeUserCount(createdRooms, rmRoom, "add"));
 	});
 
 
 });
+
+function changeUserCount(roomArray, specificRoom, way){
+	//if way is to subtract, the decrement, otherwise increment
+	if(way == "add"){
+		for(rm=1; rm<=roomArray.length; rm++){
+			//search for the room in the array
+			//then add the number of people to it
+			if(roomArray[rm-1].room == specificRoom){
+				roomArray[rm-1].userCount++;
+				console.log(roomArray);
+				break;
+			}
+		}
+		return roomArray[rm-1].userCount;
+	}else if(way == "subtract"){
+
+		for(rm=1; rm<=roomArray.length; rm++){
+			//search for the room in the array
+			//then subtract the number of people to it
+			if(roomArray[rm-1].room == specificRoom){
+				roomArray[rm-1].userCount--;
+				console.log(roomArray);
+				break;
+			}
+		}
+		return roomArray[rm-1].userCount;
+	}
+	
+}
+
 
 
 function searchTheRoom(roomArray, specificRoom){
