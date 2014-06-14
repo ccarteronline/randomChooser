@@ -41,6 +41,7 @@ $(document).ready(function(){
 
 	//User has joined a room
 	socket.on('joinedRoom', function(nameOfRoom){
+
 		if(!started){
 
 			started = true;
@@ -68,6 +69,13 @@ $(document).ready(function(){
 			$("#userDots").append("<li></li>");
 		}
 
+	});
+
+	
+	
+	socket.on("errorMessage", function(message){
+		alert(message);
+		//later change this to a proper message displayed in red or something
 	});
 
 	//When the user chooses to leave of closes out the window

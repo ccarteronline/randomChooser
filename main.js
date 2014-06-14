@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = 8888;
+var port = 1234;
 //
 var userCount = 0;
 var gameTimer;
@@ -107,28 +107,28 @@ io.on('connection', function(socket){
 function changeUserCount(roomArray, specificRoom, way){
 	//if way is to subtract, the decrement, otherwise increment
 	if(way == "add"){
-		for(rm=1; rm<=roomArray.length; rm++){
+		for(rme=1; rme<=roomArray.length; rme++){
 			//search for the room in the array
 			//then add the number of people to it
-			if(roomArray[rm-1].room == specificRoom){
-				roomArray[rm-1].userCount++;
+			if(roomArray[rme-1].room == specificRoom){
+				roomArray[rme-1].userCount++;
 				console.log(roomArray);
 				break;
 			}
 		}
-		return roomArray[rm-1].userCount;
+		return roomArray[rme-1].userCount;
 	}else if(way == "subtract"){
 
-		for(rm=1; rm<=roomArray.length; rm++){
+		for(rmd=1; rmd<=roomArray.length; rmd++){
 			//search for the room in the array
 			//then subtract the number of people to it
-			if(roomArray[rm-1].room == specificRoom){
-				roomArray[rm-1].userCount--;
+			if(roomArray[rmd-1].room == specificRoom){
+				roomArray[rmd-1].userCount--;
 				console.log(roomArray);
 				break;
 			}
 		}
-		return roomArray[rm-1].userCount;
+		return roomArray[rmd-1].userCount;
 	}
 	
 }
