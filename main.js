@@ -24,25 +24,24 @@ http.listen(port, function(){
 app.use(express.static(__dirname + "/public"));
 
 io.on('connection', function(socket){
+
+	socket.join(socket.id);//place the user in their own room to account for error messages
 	console.log(socket.id);
 	//user connected increment the amount of users joined
-	userCount++;
-	console.log('a user has connected. The amount of users: ', userCount);
 
 	//When a user joins, create a random time for the fake chooser to beep
-	randomizePickers(userCount, randomPickedForBeeps);
+	//randomizePickers(userCount, randomPickedForBeeps);
 
 	//send the user count to the client side
-	io.emit('joinedUsers', userCount);
+	//io.emit('joinedUsers', userCount);
 
 	//When a user disconnects
 	socket.on('disconnect', function(){
-		userCount--;
-		console.log('A User DISCONNECTED. The amount of users: ', userCount);	
+		//userCount--;
 		//send the user count to the client side
-		io.emit('joinedUsers', userCount);
-		randomPickedForBeeps.pop();
-		console.log(randomPickedForBeeps);
+		//io.emit('joinedUsers', userCount);
+		//randomPickedForBeeps.pop();
+		//console.log(randomPickedForBeeps);
 
 
 	});
@@ -58,17 +57,16 @@ io.on('connection', function(socket){
 	socket.on("createARoom", function(roomName){
 		//If the room exists, emit an error otherwise, join it	
 		if(searchTheRoom(createdRooms, roomName)){
-
-			console.log("This room already exists, please create a new one");
+			io.sockets.in(socket.id).emit('errorMessage', "This room already exists, please create a new one");
 
 		}else{
-
+			socket.leave(socket.id);//leave old room
 			socket.join(roomName);
 				createdRooms.push({
 
 				"room" : roomName,
-				"userCount" : 0,
-				"gameTimeEndAt" : 30
+				"gameTimeEndAt" : 30,
+				"usersList" : []
 
 			});
 
@@ -79,56 +77,56 @@ io.on('connection', function(socket){
 
 	//Join a room
 	socket.on("joinRoom", function(roomToJoin){
-
+		//look through the array of rooms and if it exists, join it, otherwise alert an error
 		if(searchTheRoom(createdRooms, roomToJoin)){
+			socket.leave(socket.id);//leave old room
 			socket.join(roomToJoin);
 			io.sockets.in(roomToJoin).emit('joinedRoom', roomToJoin);
 		}else{
-			console.log("room doesnt exist, create");
+			io.sockets.in(socket.id).emit('errorMessage', "room doesnt exist, create");
 		}
 
 	});
 
 	//When a user leaves a room or closes out their browser
 	socket.on("leaveRoom", function(roomToLeave){
+		//leave the room, then send the amount of users connected to the client after subtracting
 		socket.leave(roomToLeave);
-		io.sockets.in(roomToLeave).emit('get user count', changeUserCount(createdRooms, roomToLeave, "subtract"));
+		io.sockets.in(roomToLeave).emit('get user count', handleUsers(createdRooms, roomToLeave, socket.id, "subtract"));
 	});
 
 
 	//increment the usercount
 	socket.on("addUserCount", function(rmRoom){
-		io.sockets.in(rmRoom).emit('get user count', changeUserCount(createdRooms, rmRoom, "add"));
+		//tell the client that the user count has changed, increment it
+		io.sockets.in(rmRoom).emit('get user count', handleUsers(createdRooms, rmRoom, socket.id, "add"));
 	});
 
 
 });
 
-function changeUserCount(roomArray, specificRoom, way){
+function handleUsers(roomArray, specificRoom, userId, way){
 	//if way is to subtract, the decrement, otherwise increment
 	if(way == "add"){
-		for(rm=1; rm<=roomArray.length; rm++){
-			//search for the room in the array
-			//then add the number of people to it
-			if(roomArray[rm-1].room == specificRoom){
-				roomArray[rm-1].userCount++;
+		for(rme=1; rme<=roomArray.length; rme++){
+			if(roomArray[rme-1].room == specificRoom){
+				roomArray[rme-1].usersList.push(userId);//add the user in the array, their socket id
 				console.log(roomArray);
 				break;
 			}
 		}
-		return roomArray[rm-1].userCount;
+		return roomArray[rme-1].usersList.length;
+
 	}else if(way == "subtract"){
 
-		for(rm=1; rm<=roomArray.length; rm++){
-			//search for the room in the array
-			//then subtract the number of people to it
-			if(roomArray[rm-1].room == specificRoom){
-				roomArray[rm-1].userCount--;
+		for(rmd=1; rmd<=roomArray.length; rmd++){
+			if(roomArray[rmd-1].room == specificRoom){
+				roomArray[rme-1].usersList.splice(userId,1);//remove the user that left, their socket id
 				console.log(roomArray);
 				break;
 			}
 		}
-		return roomArray[rm-1].userCount;
+		return roomArray[rmd-1].usersList.length;
 	}
 	
 }

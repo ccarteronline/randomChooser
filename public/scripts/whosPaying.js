@@ -17,6 +17,7 @@ $(document).ready(function(){
 	var createRoomVal = $("#createRoomName");
 	var joinRoomVal = $("#joinRoomName");
 	var joinedRoomName;
+	var userSpots = [];
 	
 
 	//When user clicks to create a room, take the value and create it on server side
@@ -41,6 +42,7 @@ $(document).ready(function(){
 
 	//User has joined a room
 	socket.on('joinedRoom', function(nameOfRoom){
+
 		if(!started){
 
 			started = true;
@@ -58,16 +60,26 @@ $(document).ready(function(){
 	});
 
 	//Get the amount of users that are in the game
-	socket.on('get user count', function(usrCnt){
+	socket.on('get user count', function(rmData){
 		//Show how many users are in the room
-		$("#numUsers").text(usrCnt);
+		$("#numUsers").text(rmData);
 		//reset the dots to nothing
 		$("#userDots").text("");
 		//for each amount of users, add them to the list
-		for(i=1; i<= usrCnt; i++){
+		for(i=1; i<= rmData; i++){
 			$("#userDots").append("<li></li>");
 		}
 
+		//handle the user's spot 
+		handleUserSpots(userSpots, rmData);
+
+	});
+
+	
+	
+	socket.on("errorMessage", function(message){
+		alert(message);
+		//later change this to a proper message displayed in red or something
 	});
 
 	//When the user chooses to leave of closes out the window
@@ -81,42 +93,7 @@ $(document).ready(function(){
 
 	//User has joined the game
 	socket.on('joinedUsers', function(userCount){
-		/*amountOfUsers = userCount;
-
-
-		//store the users spot to give them an identity
-		//and only do this one time to avoid repetition
-		if(!started){
-			started = true;
-			usersNumberSpot = userCount;
-			$("#userIdentity").text(usersNumberSpot);
-			checkIfAdmin(usersNumberSpot);//check if they are admin, if so, enable them to start the game
-		}
-
-		//Update the amount of users that are in the game
-		$("#numUsers").text(userCount);
-
-		//reset dots then loop through the 
-		//usercount and add or remove users
-		$("#userDots").text("");
 		
-		
-		
-		for(i=1; i<= userCount; i++){
-			$("#userDots").append("<li></li>");
-		}
-		
-		//If users disconnect, the number decrements, 
-		//but if they are 1, do not decrement, only decrement
-		//if the number is less than 1
-		if(admin){
-			//dont decrement the number
-		}else if(userCount < usersNumberSpot){
-			usersNumberSpot--;
-			$("#userIdentity").text(usersNumberSpot);
-		}
-		//
-		*/
 	});
 	//
 
@@ -185,6 +162,20 @@ $(document).ready(function(){
 			admin = true;
 			console.log("asdf", $("#numUsers"));
 		}
+	}
+
+
+	function handleUserSpots(usrSpotArray, usrCnt){
+		// if(usrCnt>1){
+		// 	//push more imagined users to the array
+		// 	usrSpotArray.push("notYou");
+		// }else{
+
+		// }
+		// usrSpotArray.push("me");
+		// console.log("The amount of users are:", usrCnt, "The array: ", usrSpotArray);
+		// console.log(usrSpotArray);
+		
 	}
 
 });//end document ready
