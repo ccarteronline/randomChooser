@@ -88,8 +88,9 @@ $(document).ready(function(){
 			for(i=1; i<= rmData; i++){
 				$("#userDots").append("<li id='"+(this.liPrfx+i)+"'></li>");
 			}
-			console.log($("#userIdentity").text());
 			$("#listObj_"+$("#userIdentity").text()).css({"background" : "black"});
+			
+			checkIfAdmin($("#userIdentity").text());
 		}else{
 			//console.log('User used user count');
 		}
