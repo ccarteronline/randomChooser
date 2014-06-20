@@ -12,12 +12,13 @@
 	margin-left: -45px;
 }
 #userDots li{
-	width: 50px;
-	height: 45px;
-	background: url('../img/someThing.png') yellow;
+	width: 10px;
+	height: 10px;
+	background: lightGrey;
 	background-size: 100%;
 	float: left;
 	margin-left:10px;
+	border-radius: 50px;
 }
 #message{
 	position: absolute;
@@ -27,5 +28,5 @@
 	display: none;
 }
 #numUsers, #userIdentity{
-	color: orange;
+	color: gray;
 }

@@ -18,6 +18,10 @@ $(document).ready(function(){
 	var joinRoomVal = $("#joinRoomName");
 	 
 	var joinedRoomName;//This is the server variable for the room passed through functions
+	var userPlaceNum;
+	
+	
+	
 	var userSpots = [];
 	var usersHeldId;
 
@@ -66,8 +70,8 @@ $(document).ready(function(){
 			//console.log(userId);
 			usersHeldId = userId;
 			$("#userIdentity").text(userId);
+			console.log(usersHeldId);
 		}
-
 
 	});
 
@@ -75,14 +79,17 @@ $(document).ready(function(){
 	socket.on('get user count', function(rmData, rmName){
 		
 		if(joinedRoomName == rmName){
+			this.liPrfx = 'listObj_';
 			//Show how many users are in the room
 			$("#numUsers").text(rmData);
 			//reset the dots to nothing
 			$("#userDots").text("");
 			//for each amount of users, add them to the list
 			for(i=1; i<= rmData; i++){
-				$("#userDots").append("<li></li>");
+				$("#userDots").append("<li id='"+(this.liPrfx+i)+"'></li>");
 			}
+			console.log($("#userIdentity").text());
+			$("#listObj_"+$("#userIdentity").text()).css({"background" : "black"});
 		}else{
 			//console.log('User used user count');
 		}
@@ -92,7 +99,7 @@ $(document).ready(function(){
 
 	//get users position
 	socket.on('update user position', function(userList){
-		$("#userIdentity").text(userList.indexOf(usersHeldId)+1 + " socket: "+ usersHeldId);
+		$("#userIdentity").text(userList.indexOf(usersHeldId)+1);
 	});
 
 
