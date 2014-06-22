@@ -27,8 +27,8 @@ io.on('connection', function(socket){
 	
 	socket.join(socket.id);
 	//When an admin starts the game
-	socket.on('startGame', function(){
-		startTheTimer();
+	socket.on('startGame', function(inRoom){
+		startTheTimer(createdRooms, inRoom);
 	});
 
 
@@ -45,8 +45,9 @@ io.on('connection', function(socket){
 				createdRooms.push({
 
 				"room" : roomName,
-				"gameTimeEndAt" : 30,
-				"usersList" : []
+				"gameTime" : 30,
+				"usersList" : [],
+				"gameStarted" : false
 
 			});
 
@@ -142,9 +143,37 @@ function searchTheRoom(roomArray, specificRoom){
 	return this.roomExistence;
 }
 
-function startTheTimer(){
+function startTheTimer(roomsObj, inRoom){
+	//change the value with the room and
+	//emit to the client that the game is started
+	for(fhy = 1; fhy<=roomsObj.length; fhy++){
+		if(roomsObj[fhy-1].room == inRoom){
+			roomsObj[fhy-1].gameStarted = true;
+			io.sockets.in(inRoom).emit('change game status', inRoom);
+			
+			//create and start the timer for the object
+			this.roomTimer = ("timer_" + roomsObj[fhy-1].room);
+			console.log('start individual timer: ', this.roomTimer);
+			this.roomTimer = setInterval(function(){
+				console.log(roomsObj[fhy-1].gameTime);
+				//roomsObj[fhy-1].gameTime --;
+				
+			}, 1000);
+			
+			/*
+this.roomTimer = setInterval(function(){
+				//console.log(roomsObj[fhy-1].gameTime);
+				roomsObj[fhy-1].gameTime --;
+			}, 1000);
+*/
+			
+		}
+	}
+	
+	
 	//start the timer
-	gameTimer = setInterval(function(){
+	/*
+gameTimer = setInterval(function(){
 		//console.log("time: ", gameTimeEndAt);
 
 		//if the time is at the end, then stop 
@@ -166,6 +195,7 @@ function startTheTimer(){
 		io.emit('showTime', gameTimeEndAt);
 		
 	},1000);
+*/
 }
 
 //Get the amount of users that are present, then create a random number 

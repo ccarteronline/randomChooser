@@ -18,8 +18,8 @@ $(document).ready(function(){
 	var joinRoomVal = $("#joinRoomName");
 	 
 	var joinedRoomName;//This is the server variable for the room passed through functions
-	var userPlaceNum;
-	
+	var userPlaceNum;//This is the user's spot in the userslist array
+	var gameStarted = false;//This value changes when the first user is joined as admin
 	
 	
 	var userSpots = [];
@@ -69,8 +69,6 @@ $(document).ready(function(){
 
 			//console.log(userId);
 			usersHeldId = userId;
-			$("#userIdentity").text(userId);
-			console.log(usersHeldId);
 		}
 
 	});
@@ -90,7 +88,7 @@ $(document).ready(function(){
 			}
 			$("#listObj_"+$("#userIdentity").text()).css({"background" : "black"});
 			
-			checkIfAdmin($("#userIdentity").text());
+			
 		}else{
 			//console.log('User used user count');
 		}
@@ -101,6 +99,8 @@ $(document).ready(function(){
 	//get users position
 	socket.on('update user position', function(userList){
 		$("#userIdentity").text(userList.indexOf(usersHeldId)+1);
+		userPlaceNum = (userList.indexOf(usersHeldId)+1);
+		checkIfAdmin(userPlaceNum);
 	});
 
 
@@ -108,6 +108,17 @@ $(document).ready(function(){
 	socket.on("errorMessage", function(message){
 		alert(message);
 		//later change this to a proper message displayed in red or something
+	});
+	
+	//when the timer starts, the person who started it will pass 
+	//the room in and all those who are in the room will have game 
+	//started as true, this blocks a user from pressing start or becoming 
+	//an admin if they leave in the middle of the timer
+	
+	socket.on("change game status", function(itemRoom){
+		if(itemRoom == joinedRoomName){
+			gameStarted = true;
+		}
 	});
 
 	
@@ -131,8 +142,10 @@ $(document).ready(function(){
 		if(amountOfUsers < maxUsersBeforeStart){
 			alert("You need more people to join");
 		}else{
-			socket.emit('startGame', true);
+			socket.emit('startGame', joinedRoomName);
 			$("#admin").hide();
+			
+			gameStarted = true;
 		}
 	});
 
@@ -187,10 +200,9 @@ $(document).ready(function(){
 
 	//check if admin, if so, show admin controls
 	function checkIfAdmin(adminNum){
-		if(adminNum == userAdminStartNumber){
+		if(adminNum == userAdminStartNumber && gameStarted == false){
 			$("#admin").show();
 			admin = true;
-			console.log("asdf", $("#numUsers"));
 		}
 	}
 
@@ -207,6 +219,7 @@ $(document).ready(function(){
 		// console.log(usrSpotArray);
 		
 	}
+	
 
 });//end document ready
 
