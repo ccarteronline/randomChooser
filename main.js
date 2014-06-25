@@ -28,10 +28,9 @@ io.on('connection', function(socket){
 	socket.join(socket.id);
 	//When an admin starts the game
 	socket.on('startGame', function(inRoom){
+		console.log(inRoom);
 		startTheTimer(createdRooms, inRoom);
 	});
-
-
 
 	//Create a room
 	socket.on("createARoom", function(roomName){
@@ -126,8 +125,6 @@ function handleUsers(roomArray, specificRoom, userId, way){
 	
 }
 
-
-
 function searchTheRoom(roomArray, specificRoom){
 
 	for(el=1; el<=roomArray.length; el++){
@@ -151,22 +148,16 @@ function startTheTimer(roomsObj, inRoom){
 			roomsObj[fhy-1].gameStarted = true;
 			io.sockets.in(inRoom).emit('change game status', inRoom);
 			
+			createTimerForRooms(roomsObj, inRoom);
+			
 			//create and start the timer for the object
-			this.roomTimer = ("timer_" + roomsObj[fhy-1].room);
-			console.log('start individual timer: ', this.roomTimer);
-			this.roomTimer = setInterval(function(){
-				console.log(roomsObj[fhy-1].gameTime);
-				//roomsObj[fhy-1].gameTime --;
+			// this.roomTimer = ("timer_" + roomsObj[fhy-1].room);
+			// console.log('start individual timer: ', this.roomTimer);
+			// this.roomTimer = setInterval(function(){
+			// 	console.log(roomsObj[fhy-1].gameTime);
+			// 	//roomsObj[fhy-1].gameTime --;
 				
-			}, 1000);
-			
-			/*
-this.roomTimer = setInterval(function(){
-				//console.log(roomsObj[fhy-1].gameTime);
-				roomsObj[fhy-1].gameTime --;
-			}, 1000);
-*/
-			
+			// }, 1000);
 		}
 	}
 	
@@ -196,6 +187,25 @@ gameTimer = setInterval(function(){
 		
 	},1000);
 */
+}
+
+
+
+function createTimerForRooms(roomsObj, room){
+	this.myTimer = setInterval(function(){
+		//roomsObj[fhy-1].gameTime--;
+		for(asd=1; asd<=roomsObj.length; asd++){
+			if(roomsObj[asd-1].room == room){
+				if(roomsObj[asd-1].gameTime!=0){
+					roomsObj[asd-1].gameTime--;
+				}else{
+					//clearInterval(this.myTimer);
+				}
+				console.log("Room: "+room+" Game Time: "+roomsObj[asd-1].gameTime);
+			}
+		}
+
+	},1000);
 }
 
 //Get the amount of users that are present, then create a random number 
