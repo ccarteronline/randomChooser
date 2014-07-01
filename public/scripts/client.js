@@ -1,34 +1,19 @@
 $(document).ready(function(){
 
-	navigator.vibrate = navigator.vibrate || navigator.webkitVibrate || navigator.mozVibrate || navigator.msVibrate;
-
 	var socket = io();
 	var userAdminStartNumber = 1;
-	var usersNumberSpot;
 	var amountOfUsers;//Store the user count 
 	var maxUsersBeforeStart = 4;//The default amount of users needed to join
-	var started = false;
-	var shortVibeTime = 500;
-	var longVibeTime = 1000;
+	var userJoined = false;
 	var admin = false;
-	var coinSound = new Audio("sounds/coinDrop.mp3");
-
-
 	var createRoomVal = $("#createRoomName");
 	var joinRoomVal = $("#joinRoomName");
-	 
 	var joinedRoomName;//This is the server variable for the room passed through functions
 	var userPlaceNum;//This is the user's spot in the userslist array
 	var gameStarted = false;//This value changes when the first user is joined as admin
-	
-	
-	var userSpots = [];
 	var usersHeldId;
 
 
-	socket.on("testRoomEmit", function(sessionVal){
-		console.log(sessionVal);
-	});
 
 
 	//When user clicks to create a room, take the value and create it on server side
@@ -54,9 +39,9 @@ $(document).ready(function(){
 	//User has joined a room
 	socket.on('joinedRoom', function(nameOfRoom, userId){
 
-		if(!started){
+		if(!userJoined){
 
-			started = true;
+			userJoined = true;
 
 			$("#createJoinRoom").hide();
 			$("#mainContent").show();
@@ -80,6 +65,7 @@ $(document).ready(function(){
 			this.liPrfx = 'listObj_';
 			//Show how many users are in the room
 			$("#numUsers").text(rmData);
+			amountOfUsers = rmData;
 			//reset the dots to nothing
 			$("#userDots").text("");
 			//for each amount of users, add them to the list
@@ -110,11 +96,6 @@ $(document).ready(function(){
 		//later change this to a proper message displayed in red or something
 	});
 	
-	//when the timer starts, the person who started it will pass 
-	//the room in and all those who are in the room will have game 
-	//started as true, this blocks a user from pressing start or becoming 
-	//an admin if they leave in the middle of the timer
-	
 	socket.on("change game status", function(itemRoom){
 		if(itemRoom == joinedRoomName){
 			gameStarted = true;
@@ -135,17 +116,9 @@ $(document).ready(function(){
 	};
 
 
-
-
-	//User has joined the game
-	socket.on('joinedUsers', function(userCount){
-		
-	});
-	//
-
 	$("#startGame").click(function(){
 		if(amountOfUsers < maxUsersBeforeStart){
-			alert("You need more people to join");
+			alert("You need atleast "+maxUsersBeforeStart+" users to join");
 		}else{
 			socket.emit('startGame', joinedRoomName);
 			$("#admin").hide();
@@ -153,55 +126,6 @@ $(document).ready(function(){
 			gameStarted = true;
 		}
 	});
-
-	//Update everyone with the time.
-	socket.on('showTime', function(gameTime){
-		if(gameTime == 0){
-			//window.close();
-		}
-		$("#timeLeft").text(gameTime);
-	});
-
-	//Beep the user for a faux pas that they have to pay
-	socket.on('beepUser', function(userNum){
-		if(userNum == usersNumberSpot){
-			/*navigator.vibrate(shortVibeTime);
-			navigator.webkitVibrate(shortVibeTime);
-			navigator.mozVibrate(shortVibeTime);
-			navigator.msVibrate(shortVibeTime);*/
-			navigator.vibrate(shortVibeTime);
-			soundHandle = document.getElementById('soundHandle');
-			soundHandle.src = 'sounds/coinDrop.mp3';
-			soundHandle.play();
-			$("body").css({"background" : "yellow"});
-			coinSound.play();
-			alert('Watch Out!');
-			$("body").css({"background" : "white"});
-		}
-	});
-
-	socket.on('finalBeep', function(person){
-		if(person == usersNumberSpot){
-			/*navigator.vibrate(longVibeTime);
-			navigator.webkitVibrate(longVibeTime);
-			navigator.mozVibrate(longVibeTime);
-			navigator.msVibrate(longVibeTime);*/
-			navigator.vibrate(longVibeTime);
-			$("body").css({"background" : "yellow"});
-
-			soundHandle = document.getElementById('soundHandle');
-			soundHandle.src = 'sounds/coinDrop.mp3';
-			soundHandle.play();
-
-			coinSound.play();
-
-			alert('YO, ITS You!');
-			alert("GAME OVER! Close the page and restart!");
-		}else{
-			alert("GAME OVER! Close the page and restart!");
-		}
-	});
-
 
 	//check if admin, if so, show admin controls
 	function checkIfAdmin(adminNum){
@@ -211,20 +135,6 @@ $(document).ready(function(){
 		}
 	}
 
-
-	function handleUserSpots(usrSpotArray, usrCnt){
-		// if(usrCnt>1){
-		// 	//push more imagined users to the array
-		// 	usrSpotArray.push("notYou");
-		// }else{
-
-		// }
-		// usrSpotArray.push("me");
-		// console.log("The amount of users are:", usrCnt, "The array: ", usrSpotArray);
-		// console.log(usrSpotArray);
-		
-	}
-	
 
 });//end document ready
 

@@ -169,6 +169,7 @@ function createTimerForRooms(roomsObj, room){
 					io.sockets.in(room).emit('update the time for users', roomsObj[asd-1].gameTime, room);
 				}else{
 					clearInterval(this);
+					io.sockets.in(room).emit('notify users timer is done');
 				}
 			}
 		}
