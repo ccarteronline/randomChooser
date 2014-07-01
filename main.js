@@ -46,7 +46,7 @@ io.on('connection', function(socket){
 				"room" : roomName,
 				"gameTime" : 30,
 				"usersList" : [],
-				"gameStarted" : false
+				"gameStarted" : false,
 
 			});
 
@@ -149,64 +149,33 @@ function startTheTimer(roomsObj, inRoom){
 			io.sockets.in(inRoom).emit('change game status', inRoom);
 			
 			createTimerForRooms(roomsObj, inRoom);
-			
-			//create and start the timer for the object
-			// this.roomTimer = ("timer_" + roomsObj[fhy-1].room);
-			// console.log('start individual timer: ', this.roomTimer);
-			// this.roomTimer = setInterval(function(){
-			// 	console.log(roomsObj[fhy-1].gameTime);
-			// 	//roomsObj[fhy-1].gameTime --;
-				
-			// }, 1000);
 		}
 	}
 	
-	
-	//start the timer
-	/*
-gameTimer = setInterval(function(){
-		//console.log("time: ", gameTimeEndAt);
-
-		//if the time is at the end, then stop 
-		//timer otherwise, subtract time
-		if(gameTimeEndAt == 0){
-			clearInterval(gameTimer);
-			//randomPickedForBeeps = [];
-			finalBeepMessage(userCount);
-			
-		}else{
-
-			gameTimeEndAt--;
-
-			//choose a person to beep at if that time hits 
-			chooseFakePersonToBeep(gameTimeEndAt, randomPickedForBeeps, userCount);
-		}
-
-		//show time
-		io.emit('showTime', gameTimeEndAt);
-		
-	},1000);
-*/
 }
 
 
 
 function createTimerForRooms(roomsObj, room){
-	this.myTimer = setInterval(function(){
-		//roomsObj[fhy-1].gameTime--;
+
+	timerName = (room + "_timer").toString();
+
+	timerName = setInterval(function(timerName){
+
 		for(asd=1; asd<=roomsObj.length; asd++){
 			if(roomsObj[asd-1].room == room){
 				if(roomsObj[asd-1].gameTime!=0){
 					roomsObj[asd-1].gameTime--;
+					io.sockets.in(room).emit('update the time for users', roomsObj[asd-1].gameTime, room);
 				}else{
-					//clearInterval(this.myTimer);
+					clearInterval(this);
 				}
-				console.log("Room: "+room+" Game Time: "+roomsObj[asd-1].gameTime);
 			}
 		}
 
 	},1000);
 }
+
 
 //Get the amount of users that are present, then create a random number 
 //for each of them as far as who will be the person to pay

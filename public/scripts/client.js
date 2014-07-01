@@ -121,6 +121,11 @@ $(document).ready(function(){
 		}
 	});
 
+	socket.on("update the time for users", function(newTime, inRoom){
+		if(inRoom == joinedRoomName){
+			$("#timeLeft").text(newTime);
+		}
+	});
 	
 
 	//When the user chooses to leave of closes out the window
