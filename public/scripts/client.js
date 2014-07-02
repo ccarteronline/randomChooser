@@ -1,20 +1,17 @@
 $(document).ready(function(){
 
 	var socket = io();
-	var userAdminStartNumber = 1;
+	var userAdminStartNumber = 1;//This is the first person who joins, you can change this.
 	var amountOfUsers;//Store the user count 
-	var maxUsersBeforeStart = 4;//The default amount of users needed to join
-	var userJoined = false;
-	var admin = false;
+	var maxUsersBeforeStart = 4;//The default amount of users needed to join, you can change this
+	var userJoined = false;//This is false until a user joins the game
+	var admin = false;//this is false until the userAdminStartNumber is defined
 	var createRoomVal = $("#createRoomName");
 	var joinRoomVal = $("#joinRoomName");
 	var joinedRoomName;//This is the server variable for the room passed through functions
 	var userPlaceNum;//This is the user's spot in the userslist array
 	var gameStarted = false;//This value changes when the first user is joined as admin
-	var usersHeldId;
-
-
-
+	var usersHeldId;//The socket id of the user
 
 	//When user clicks to create a room, take the value and create it on server side
 	$("#createNewRoom").click(function(){
@@ -23,7 +20,6 @@ $(document).ready(function(){
 		}else{
 			socket.emit("createARoom", createRoomVal.val());
 		}
-		
 	});
 	
 
@@ -73,8 +69,7 @@ $(document).ready(function(){
 				$("#userDots").append("<li id='"+(this.liPrfx+i)+"'></li>");
 			}
 			$("#listObj_"+$("#userIdentity").text()).css({"background" : "black"});
-			
-			
+
 		}else{
 			//console.log('User used user count');
 		}
@@ -92,7 +87,7 @@ $(document).ready(function(){
 
 	//Error messages
 	socket.on("errorMessage", function(message){
-		alert(message);
+		$("#message").text("Message: "+ message);
 		//later change this to a proper message displayed in red or something
 	});
 	
@@ -108,13 +103,6 @@ $(document).ready(function(){
 		}
 	});
 	
-
-	//When the user chooses to leave of closes out the window
-	window.onbeforeunload = function(e) {
-		//user has clicked the close button, remove them from the room
-		socket.emit('leaveRoom', joinedRoomName);
-	};
-
 
 	$("#startGame").click(function(){
 		if(amountOfUsers < maxUsersBeforeStart){

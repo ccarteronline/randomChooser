@@ -86,6 +86,14 @@ io.on('connection', function(socket){
 	});
 
 
+	socket.on('disconnect', function(){
+		for(ype = 1; ype<= createdRooms.length; ype++){
+			if(createdRooms[ype-1].usersList.indexOf(socket.id) != -1){
+				io.sockets.in(createdRooms[ype-1].room).emit('get user count', handleUsers(createdRooms, createdRooms[ype-1].room, socket.id, "subtract"), createdRooms[ype-1].room);
+			}
+		}
+	});
+
 });
 
 function handleUsers(roomArray, specificRoom, userId, way){
