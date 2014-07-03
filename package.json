@@ -1,5 +1,5 @@
 {
-  "name": "whos-paying",
+  "name": "randomChooser",
   "version": "0.0.1",
   "description": "A fun way to decide who is paying the bill!",
   "dependencies": {

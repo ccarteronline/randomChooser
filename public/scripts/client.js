@@ -16,7 +16,7 @@ $(document).ready(function(){
 	//When user clicks to create a room, take the value and create it on server side
 	$("#createNewRoom").click(function(){
 		if(createRoomVal.val() == ""){
-			alert("This cannot be left blank");
+			$("#message").text("This cannot be left blank");
 		}else{
 			socket.emit("createARoom", createRoomVal.val());
 		}
@@ -26,7 +26,7 @@ $(document).ready(function(){
 	//When a user clicks join a room, take the value and search for it in the array
 	$("#joinRoomBtn").click(function(){
 		if(joinRoomVal.val() == ""){
-			alert("This cannot be left blank");
+			$("#message").text("This cannot be left blank");
 		}else{
 			socket.emit("joinRoom", joinRoomVal.val());
 		}
@@ -41,7 +41,7 @@ $(document).ready(function(){
 
 			$("#createJoinRoom").hide();
 			$("#mainContent").show();
-
+			$("#message").text("");
 			//name the room
 			joinedRoomName = nameOfRoom;
 			$("#roomNameID").text(nameOfRoom);
@@ -87,7 +87,7 @@ $(document).ready(function(){
 
 	//Error messages
 	socket.on("errorMessage", function(message){
-		$("#message").text("Message: "+ message);
+		$("#message").text(message);
 		//later change this to a proper message displayed in red or something
 	});
 	
@@ -102,15 +102,27 @@ $(document).ready(function(){
 			$("#timeLeft").text(newTime);
 		}
 	});
+
+	socket.on('fake message', function(room, user){
+		if(room == joinedRoomName && user == userPlaceNum){
+			$("#message").append("<br />WARNING!");
+		}
+	});
+
+	socket.on('last message', function(room, user){
+		if(room == joinedRoomName && user == userPlaceNum){
+			$("#message").append("<br />TIMES UP!! YOU ARE CHOOSEN!");
+		}
+	});
 	
 
 	$("#startGame").click(function(){
 		if(amountOfUsers < maxUsersBeforeStart){
-			alert("You need atleast "+maxUsersBeforeStart+" users to join");
+			$("#message").text("You need atleast "+maxUsersBeforeStart+" users to join");
 		}else{
 			socket.emit('startGame', joinedRoomName);
 			$("#admin").hide();
-			
+			$("#message").text("");
 			gameStarted = true;
 		}
 	});

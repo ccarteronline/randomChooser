@@ -2,15 +2,12 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = 8888;
-//
-var userCount = 0;
-var gameTimer;
-var gameTimeEndAt = 30; //seconds
-var randomPickedForBeeps = new Array();
+var port = 8888;//You can change this to whatever port you want
+var timerTime = 1000;//The timer decrements every second, this can be changed
+var createdRooms = new Array();//The created rooms are stored as objects in this array
 
-
-var createdRooms = new Array();
+//make the main directory in the public folder
+app.use(express.static(__dirname + "/public"));
 
 
 //create server and listen for it
@@ -20,8 +17,7 @@ http.listen(port, function(){
 
 
 
-//make the main directory in the public folder
-app.use(express.static(__dirname + "/public"));
+
 
 io.on('connection', function(socket){
 	
@@ -66,7 +62,7 @@ io.on('connection', function(socket){
 			io.sockets.in(roomToJoin).emit('joinedRoom', roomToJoin, socket.id);
 
 		}else{
-			io.sockets.in(socket.id).emit('errorMessage', "room doesnt exist, create");
+			io.sockets.in(socket.id).emit('errorMessage', "This room does not exist, Create it above");
 		}
 
 	});
@@ -175,40 +171,26 @@ function createTimerForRooms(roomsObj, room){
 				if(roomsObj[asd-1].gameTime!=0){
 					roomsObj[asd-1].gameTime--;
 					io.sockets.in(room).emit('update the time for users', roomsObj[asd-1].gameTime, room);
+					//Send a message to the user that they are almost
+					sendMessageToUser(roomsObj[asd-1].usersList.length, room, "fake");
 				}else{
 					clearInterval(this);
-					io.sockets.in(room).emit('notify users timer is done');
+					sendMessageToUser(roomsObj[asd-1].usersList.length, room, "lastMessage");
 				}
 			}
 		}
 
-	},1000);
+	},timerTime);
 }
+function sendMessageToUser(amtOfUsers, inRoom, way){
+	this.userToNotify = Math.floor((Math.random() * amtOfUsers) + 1);
+	if(way == "fake"){
+		io.sockets.in(inRoom).emit('fake message', inRoom, this.userToNotify);
 
+	}else if(way == "lastMessage"){
 
-//Get the amount of users that are present, then create a random number 
-//for each of them as far as who will be the person to pay
-function randomizePickers(numberOfUsers, randomPeopleArray){
-	
-	this.numValue = Math.floor((Math.random() * gameTimeEndAt) + 1);
-	randomPeopleArray.push(this.numValue);
-	console.log(randomPeopleArray);
-}
-
-//search through array of random times, if they match
-//choose a random person to beep
-function chooseFakePersonToBeep(carriedTimer, timeKeptArray, userTotal){
-	
-	if(timeKeptArray.indexOf(carriedTimer) != -1){
-		this.randomBeepPerson = Math.floor((Math.random() * userTotal) + 1);
-		console.log(this.randomBeepPerson);
-		io.emit('beepUser', this.randomBeepPerson);//show time
+		io.sockets.in(inRoom).emit('last message', inRoom, this.userToNotify);
 	}
+	
 }
 
-//This is actually all that we need to choose the actual person in the end
-function finalBeepMessage(amountOfUsers){
-	this.randomUser = Math.floor((Math.random() * amountOfUsers) + 1);
-	io.emit('finalBeep', this.randomUser);
-	console.log(this.randomUser);
-}
