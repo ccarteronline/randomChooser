@@ -139,7 +139,8 @@ $(document).ready(function(){
 	//
 
 	$("#startGame").click(function(){
-		if(amountOfUsers < maxUsersBeforeStart){
+		
+		if($("#numUsers").text() < maxUsersBeforeStart){
 			alert("You need more people to join");
 		}else{
 			socket.emit('startGame', joinedRoomName);
@@ -147,6 +148,9 @@ $(document).ready(function(){
 			
 			gameStarted = true;
 		}
+
+
+		//alert('clicked');
 	});
 
 	//Update everyone with the time.
