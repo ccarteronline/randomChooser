@@ -97,42 +97,10 @@ $(document).ready(function(){
 		}
 	});
 
-<<<<<<< HEAD
-	
-
-	//When the user chooses to leave of closes out the window
-	window.onbeforeunload = function(e) {
-		//user has clicked the close button, remove them from the room
-		socket.emit('leaveRoom', joinedRoomName);
-	};
-
-
-
-
-	//User has joined the game
-	socket.on('joinedUsers', function(userCount){
-		
-	});
-	//
-
-	$("#startGame").click(function(){
-		
-		if($("#numUsers").text() < maxUsersBeforeStart){
-			alert("You need more people to join");
-		}else{
-			socket.emit('startGame', joinedRoomName);
-			$("#admin").hide();
-			
-			gameStarted = true;
-=======
 	socket.on("update the time for users", function(newTime, inRoom){
 		if(inRoom == joinedRoomName){
 			$("#timeLeft").text(newTime);
->>>>>>> dbe0d742e826218a1b1acaf24746dfeff0593485
 		}
-
-
-		//alert('clicked');
 	});
 
 	socket.on('fake message', function(room, user){
