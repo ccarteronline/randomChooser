@@ -15,16 +15,11 @@ http.listen(port, function(){
 	console.log('listening on: ' + port);
 });
 
-
-
-
-
 io.on('connection', function(socket){
 	
 	socket.join(socket.id);
 	//When an admin starts the game
 	socket.on('startGame', function(inRoom){
-		console.log(inRoom);
 		startTheTimer(createdRooms, inRoom);
 	});
 
@@ -67,14 +62,6 @@ io.on('connection', function(socket){
 
 	});
 
-	//When a user leaves a room or closes out their browser
-	socket.on("leaveRoom", function(roomToLeave){
-		//leave the room, then send the amount of users connected to the client after subtracting
-		socket.leave(roomToLeave);
-		io.sockets.in(roomToLeave).emit('get user count', handleUsers(createdRooms, roomToLeave, socket.id, "subtract"), roomToLeave);
-	});
-
-
 	//increment the usercount
 	socket.on("addUserCount", function(rmRoom){
 		//tell the client that the user count has changed, increment it
@@ -85,9 +72,15 @@ io.on('connection', function(socket){
 	socket.on('disconnect', function(){
 		for(ype = 1; ype<= createdRooms.length; ype++){
 			if(createdRooms[ype-1].usersList.indexOf(socket.id) != -1){
+				socket.leave(createdRooms[ype-1].room);
 				io.sockets.in(createdRooms[ype-1].room).emit('get user count', handleUsers(createdRooms, createdRooms[ype-1].room, socket.id, "subtract"), createdRooms[ype-1].room);
+				sweepIfNone(createdRooms, (ype-1), createdRooms[ype-1].usersList.length);
 			}
 		}
+	});
+
+	socket.on('displayUI', function(inThisRoom){
+		io.sockets.in(inThisRoom).emit('showGameUI', inThisRoom);
 	});
 
 });
@@ -99,7 +92,7 @@ function handleUsers(roomArray, specificRoom, userId, way){
 			if(roomArray[rme-1].room == specificRoom){
 				roomArray[rme-1].usersList.push(userId);//add the user in the array, their socket id
 				io.sockets.in(specificRoom).emit('update user position', roomArray[rme-1].usersList);
-				console.log(roomArray);
+				console.log(createdRooms);
 				break;
 			}
 		}
@@ -116,7 +109,9 @@ function handleUsers(roomArray, specificRoom, userId, way){
 				this.arIndex = roomArray[rmd-1].usersList.indexOf(userId);
 				roomArray[rmd-1].usersList.splice(this.arIndex,1);//remove the user that left
 				io.sockets.in(specificRoom).emit('update user position', roomArray[rmd-1].usersList);
-				console.log(roomArray);
+				//console.log("There are: " + roomArray[rmd-1].usersList.length + "in this room");
+				//console.log("What is the object? " + roomArray.indexOf(roomArray[rmd-1]));
+				console.log(createdRooms);
 				break;
 			}
 		}
@@ -124,14 +119,14 @@ function handleUsers(roomArray, specificRoom, userId, way){
 		if(roomArray[rmd-1] != undefined){
 			return roomArray[rmd-1].usersList.length;
 		}
-		
 	}
-	
 }
 
 function searchTheRoom(roomArray, specificRoom){
+	this.roomExistence = false;
 
 	for(el=1; el<=roomArray.length; el++){
+	
 		if(roomArray[el-1].room == specificRoom){
 			this.roomExistence = true;
 			break;
@@ -141,6 +136,8 @@ function searchTheRoom(roomArray, specificRoom){
 		}
 	}
 	//when the loop is done, the room existence is set, log it
+	console.log(this.roomExistence);
+	console.log('the length of the array is: ', roomArray.length);
 	return this.roomExistence;
 }
 
@@ -180,11 +177,13 @@ function createTimerForRooms(roomsObj, room){
 			}
 		}
 
-	},timerTime);
+	}, timerTime);
 }
 function sendMessageToUser(amtOfUsers, inRoom, way){
 	this.userToNotify = Math.floor((Math.random() * amtOfUsers) + 1);
+
 	if(way == "fake"){
+
 		io.sockets.in(inRoom).emit('fake message', inRoom, this.userToNotify);
 
 	}else if(way == "lastMessage"){
@@ -192,5 +191,18 @@ function sendMessageToUser(amtOfUsers, inRoom, way){
 		io.sockets.in(inRoom).emit('last message', inRoom, this.userToNotify);
 	}
 	
+}
+
+function sweepIfNone(_theArray, _objSpot, _numItems){
+	if(_numItems == 0){
+		//delete the object from the array
+		createdRooms.splice(_objSpot,1);
+		console.log("the array is: ", _theArray);
+		console.log("the index of the spot is: ", _objSpot);
+		console.log("this should be zero is it? ", _numItems);
+		console.log(createdRooms);
+	}else{
+		console.log("A USER HAS DISCONNECTED");
+	}
 }
 
