@@ -197,9 +197,6 @@ function sweepIfNone(_theArray, _objSpot, _numItems){
 	if(_numItems == 0){
 		//delete the object from the array
 		createdRooms.splice(_objSpot,1);
-		console.log("the array is: ", _theArray);
-		console.log("the index of the spot is: ", _objSpot);
-		console.log("this should be zero is it? ", _numItems);
 		console.log(createdRooms);
 	}else{
 		console.log("A USER HAS DISCONNECTED");
