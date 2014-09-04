@@ -2,7 +2,7 @@ var express = require('express');
 var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
-var port = 8888;//You can change this to whatever port you want
+var port = 7878;//You can change this to whatever port you want
 var timerTime = 1000;//The timer decrements every second, this can be changed
 var createdRooms = new Array();//The created rooms are stored as objects in this array
 
